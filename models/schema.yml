@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: customers
+    description: One record per customer
+    columns:
+      - name: customer_id
+        description: tests that essentially make customer_id a primary key
+        tests:
+          - unique
+          - not_null
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_orders
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: status
+        tests:
+          # enforces that these are the only permissible values for order status
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+      - name: customer_id
+        tests:
+          - not_null
+          # foreign key test that there is an assiciated record in stg_customers with the same customer_id
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
